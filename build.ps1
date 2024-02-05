@@ -1,12 +1,12 @@
 Write-Host(" ================================ ")
-Write-Host(" == ZAP WAVES GENERATOR BUILD == ")
+Write-Host(" == SURF SIMPLES GENERATOR BUILD == ")
 Write-Host(" ================================ ")
 
 # build da imagem
-docker build . -t zap_waves
+docker build . -t surfsimples
 
 # remove container existente
-docker rm -f zap_waves_container
+docker rm -f surfsimples_container
 
 # executa um novo container
-docker run -d --name zap_waves_container zap_waves
+docker run -d --name surfsimples_container surfsimples
