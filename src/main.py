@@ -1,9 +1,5 @@
-from datetime import datetime, timedelta
 from configs import *
 from utils import *
-
-# folder_name = os.path.split(os.getcwd())[-1]
-# df_for = pd.read_csv('prev_2024-02-04.csv')
 
 local = NOME_PRAIA + ', ' + ESTADO
 data_json = stormglass_request(local)
