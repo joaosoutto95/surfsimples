@@ -20,7 +20,12 @@ def stormglass_request(local):
     start = arrow.now().floor('day').shift(days=-1)
     end = arrow.now().ceil('day').shift(days=1)
 
-    paramit = ','.join(['airTemperature','cloudCover','currentDirection','currentSpeed','gust','humidity','precipitation','swellDirection','swellHeight','swellPeriod','secondarySwellPeriod','secondarySwellDirection','waterTemperature','waveDirection','waveHeight','wavePeriod','windWaveDirection','windWaveHeight','windWavePeriod','windDirection','windSpeed'])
+    paramit = ','.join(['airTemperature','cloudCover','currentDirection','currentSpeed','gust','humidity','precipitation','waterTemperature',
+                        'swellDirection','swellHeight','swellPeriod',
+                        'secondarySwellDirection','secondarySwellHeight','secondarySwellPeriod',
+                        'waveDirection','waveHeight','wavePeriod',
+                        'windWaveDirection','windWaveHeight','windWavePeriod',
+                        'windDirection','windSpeed'])
 
     response = requests.get(
       'https://api.stormglass.io/v2/weather/point',
