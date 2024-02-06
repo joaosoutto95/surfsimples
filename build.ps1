@@ -2,8 +2,11 @@ Write-Host(" ================================ ")
 Write-Host(" == SURF SIMPLES GENERATOR BUILD == ")
 Write-Host(" ================================ ")
 
-# build da imagem
-docker build . -t surfsimples
+## build da imagem
+# docker build . -t surfsimples
+
+# update da imagem
+docker build -f DockerfileUpdate -t surfsimples .
 
 # remove container existente
 docker rm -f surfsimples_container

@@ -56,9 +56,6 @@ def data_to_pandas(data_json):
     df_for['time'] = pd.to_datetime(df_for['time'])
     df_tid['datetime'] = pd.to_datetime(df_tid['datetime'])
 
-    df_for['time'] = df_for['time'].dt.tz_convert(BRAZIL_TZ)
-    df_tid['datetime'] = df_tid['datetime'].dt.tz_convert(BRAZIL_TZ)
-
     df_for['swellDirection_sigla'] = df_for['swellDirection.noaa'].apply(degrees_to_direction)
     df_for['secondarySwellDirection_sigla'] = df_for['secondarySwellDirection.noaa'].apply(degrees_to_direction)
     df_for['waveDirection_sigla'] = df_for['waveDirection.noaa'].apply(degrees_to_direction)
