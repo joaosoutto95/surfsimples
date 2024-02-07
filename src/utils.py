@@ -1,3 +1,4 @@
+import time
 import unicodedata
 import pandas as pd
 import datetime as dt
@@ -11,38 +12,41 @@ from configs import *
 
 def stormglass_request(local):
     url = f'https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(local)}`&format=jsonv2'
+    try:
+        response = requests.get(url).json()
 
-    response = requests.get(url).json()
+        latitude = response[0]["lat"]
+        longitude = response[0]["lon"]
 
-    latitude = response[0]["lat"]
-    longitude = response[0]["lon"]
+        start = arrow.now().floor('day').shift(days=-1)
+        end = arrow.now().ceil('day').shift(days=3)
 
-    start = arrow.now().floor('day').shift(days=-1)
-    end = arrow.now().ceil('day').shift(days=1)
+        paramit = ','.join(['airTemperature','cloudCover','currentDirection','currentSpeed','gust','humidity','precipitation','waterTemperature',
+                            'swellDirection','swellHeight','swellPeriod',
+                            'secondarySwellDirection','secondarySwellHeight','secondarySwellPeriod',
+                            'waveDirection','waveHeight','wavePeriod',
+                            'windWaveDirection','windWaveHeight','windWavePeriod',
+                            'windDirection','windSpeed'])
 
-    paramit = ','.join(['airTemperature','cloudCover','currentDirection','currentSpeed','gust','humidity','precipitation','waterTemperature',
-                        'swellDirection','swellHeight','swellPeriod',
-                        'secondarySwellDirection','secondarySwellHeight','secondarySwellPeriod',
-                        'waveDirection','waveHeight','wavePeriod',
-                        'windWaveDirection','windWaveHeight','windWavePeriod',
-                        'windDirection','windSpeed'])
+        response = requests.get(
+          'https://api.stormglass.io/v2/weather/point',
+          params={
+            'lat': latitude,
+            'lng': longitude,
+            'params': paramit,
+            'start': start.to('UTC').timestamp(),
+            'end': end.to('UTC').timestamp() 
+          },
+          headers={
+            'Authorization': API_KEY
+          }
+        )
 
-    response = requests.get(
-      'https://api.stormglass.io/v2/weather/point',
-      params={
-        'lat': latitude,
-        'lng': longitude,
-        'params': paramit,
-        'start': start.to('UTC').timestamp(),
-        'end': end.to('UTC').timestamp() 
-      },
-      headers={
-        'Authorization': API_KEY
-      }
-    )
-
-    json_data = response.json()
-    return json_data
+        json_data = response.json()
+        return json_data
+    except:
+        time.sleep(5)
+        return None
 
 def degrees_to_direction(degrees):
     directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
@@ -70,7 +74,7 @@ def data_to_pandas(data_json):
                     'windWaveDirection.noaa', 'windWaveDirection_sigla', 'windWaveHeight.noaa', 'windWavePeriod.noaa']].copy()
 
     df_tide_3days = df_tid[(df_tid['datetime']>=df_for['time'][0])&
-                           (df_tid['datetime']<(df_for['time'][0]+dt.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0))].copy().reset_index(drop=True)
+                           (df_tid['datetime']<(df_for['time'][0]+dt.timedelta(days=5)).replace(hour=0, minute=0, second=0, microsecond=0))].copy().reset_index(drop=True)
     
     return df_for, df_tide_3days
 
@@ -107,7 +111,7 @@ def send_email(file_path=None, file_name=None):
     html = f"""
         Coe Thadeuzao,<br>
 
-        Segue em anexo a planilha dos dados da praia do amor (por enquanto hehe) do dia de ontem ({(dt.datetime.now()-dt.timedelta(days=1)).strftime("%d/%m/%Y")}) até amanhã ({(dt.datetime.now()+dt.timedelta(days=1)).strftime("%d/%m/%Y")}).<br>
+        Segue em anexo a planilha dos dados da praia do amor (por enquanto hehe) do dia de ontem ({(dt.datetime.now()-dt.timedelta(days=1)).strftime("%d/%m/%Y")}) até D+3 ({(dt.datetime.now()+dt.timedelta(days=3)).strftime("%d/%m/%Y")}).<br>
 
         Att.
     """
