@@ -1,4 +1,5 @@
 # Folders
+.vscode/
 tests/
 env_surfsimples/
 src/__pycache__/
