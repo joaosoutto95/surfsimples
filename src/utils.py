@@ -60,6 +60,9 @@ def data_to_pandas(data_json):
     df_for['time'] = pd.to_datetime(df_for['time'])
     df_tid['datetime'] = pd.to_datetime(df_tid['datetime'])
 
+    df_for['time'] = df_for['time'].dt.tz_convert(BRAZIL_TZ)
+    df_tid['datetime'] = df_tid['datetime'].dt.tz_convert(BRAZIL_TZ)
+    
     df_for['swellDirection_sigla'] = df_for['swellDirection.noaa'].apply(degrees_to_direction)
     df_for['secondarySwellDirection_sigla'] = df_for['secondarySwellDirection.noaa'].apply(degrees_to_direction)
     df_for['waveDirection_sigla'] = df_for['waveDirection.noaa'].apply(degrees_to_direction)
@@ -94,8 +97,13 @@ def save_excel(df_forecast, df_tides):
             for i, col in enumerate(df.columns):
                 max_len = max(df[col].astype(str).apply(len).max(), len(col))
                 worksheet.set_column(i, i, max_len + 2)
-
-    return output_file_name  
+    
+    df_forecast_day = df_forecast[(df_forecast['time']>=dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))&
+                                  (df_forecast['time']<dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(days=1))].reset_index(drop=True)
+    df_tides_day = df_tides[(df_tides['datetime']>=dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))&
+                            (df_tides['datetime']<dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(days=1))].reset_index(drop=True)
+    
+    return df_forecast_day, df_tides_day, output_file_name  
 
 def to_snake_case(name):
     name = name.replace(' ', '_')
