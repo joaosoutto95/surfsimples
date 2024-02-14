@@ -3,8 +3,11 @@
 tests/
 env_surfsimples/
 src/__pycache__/
+dist/
+build/
 
 # Extensions
 *.db
 *.exe
 *.sql
+*.spec
