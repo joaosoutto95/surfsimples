@@ -8,6 +8,7 @@ import urllib.parse
 
 from pathlib import Path
 from email_sender import *
+from classification import *
 from configs import *
 
 def stormglass_request(local):
@@ -48,11 +49,6 @@ def stormglass_request(local):
         time.sleep(5)
         return None
 
-def degrees_to_direction(degrees):
-    directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
-    index = round(degrees / (360 / 16)) % 16
-    return directions[index]
-
 def data_to_pandas(data_json):
     df_for = pd.DataFrame(pd.json_normalize(data_json['hours']))
     df_tid = pd.read_csv('mare_natal.csv')
@@ -69,12 +65,18 @@ def data_to_pandas(data_json):
     df_for['windDirection_sigla'] = df_for['windDirection.noaa'].apply(degrees_to_direction)
     df_for['windWaveDirection_sigla'] = df_for['windWaveDirection.noaa'].apply(degrees_to_direction)
 
+    df_for['wind_direction_class'] = df_for['windDirection.noaa'].apply(classify_wind_dir)
+    df_for['wind_force_class'] = df_for['windSpeed.noaa'].apply(classify_wind_for)
+    df_for['wave_direction_class'] = df_for['swellDirection.noaa'].apply(classify_wave_dir)
+    df_for['wave_force_class'] = df_for['swellHeight.noaa'].apply(classify_wave_for)
+
     df_for = df_for[['time',
                     'swellDirection.noaa', 'swellDirection_sigla', 'swellHeight.noaa', 'swellPeriod.noaa',
                     'secondarySwellDirection.noaa', 'secondarySwellDirection_sigla', 'secondarySwellHeight.noaa', 'secondarySwellPeriod.noaa',
                     'waveDirection.noaa', 'waveDirection_sigla', 'waveHeight.noaa', 'wavePeriod.noaa',
                     'windDirection.noaa', 'windDirection_sigla', 'windSpeed.noaa', 
-                    'windWaveDirection.noaa', 'windWaveDirection_sigla', 'windWaveHeight.noaa', 'windWavePeriod.noaa']].copy()
+                    'windWaveDirection.noaa', 'windWaveDirection_sigla', 'windWaveHeight.noaa', 'windWavePeriod.noaa',
+                    'wind_direction_class', 'wind_force_class', 'wave_direction_class', 'wave_force_class']].copy()
 
     df_tide_3days = df_tid[(df_tid['datetime']>=df_for['time'][0])&
                            (df_tid['datetime']<(df_for['time'][0]+dt.timedelta(days=5)).replace(hour=0, minute=0, second=0, microsecond=0))].copy().reset_index(drop=True)

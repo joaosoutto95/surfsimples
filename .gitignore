@@ -5,6 +5,7 @@ env_surfsimples/
 src/__pycache__/
 dist/
 build/
+ref_marinha_rides/
 
 # Extensions
 *.db

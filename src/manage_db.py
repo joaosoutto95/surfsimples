@@ -30,8 +30,12 @@ def send_forecast_to_db(df_surf, df_tide):
                                                        windWaveDirection_noaa, 
                                                        windWaveDirection_sigla, 
                                                        windWaveHeight_noaa, 
-                                                       windWavePeriod_noaa)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', surfing_data)
+                                                       windWavePeriod_noaa,
+                                                       wind_direction_class,
+                                                       wind_force_class, 
+                                                       wave_direction_class, 
+                                                       wave_force_class)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', surfing_data)
     
     conn.commit()
     conn.close()
