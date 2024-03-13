@@ -1,8 +1,8 @@
 # Folders
 .vscode/
 tests/
-env_surfsimples/
-src/__pycache__/
+env_*/
+__pycache__/
 dist/
 build/
 ref_marinha_rides/
@@ -12,3 +12,4 @@ ref_marinha_rides/
 *.exe
 *.sql
 *.spec
+*.json
