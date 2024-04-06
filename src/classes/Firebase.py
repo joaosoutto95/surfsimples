@@ -1,4 +1,5 @@
 from firebase_admin import firestore
+from funcs.utils import *
 
 import firebase_admin
 
@@ -41,7 +42,7 @@ class FirebaseDB:
     def update_value_doc(self, doc_name, key, forecast_new_data):
         doc_ref = self.db.document(doc_name)
         doc_data = doc_ref.get().to_dict()
-
+        
         if not doc_data:
             doc_ref.set({key: forecast_new_data})
         else:
@@ -50,4 +51,19 @@ class FirebaseDB:
 
 
     def send_forecast_to_db(self, spot_name, full_dict):
-        self.update_value_doc(f'spots_data/{spot_name}', 'forecast_data', full_dict)
+        spot_doc = self.db.collection('forecast_data').document(spot_name)
+        pico_id_str = spot_doc.get().to_dict()['pico_id']
+        
+        for dt_original in full_dict.keys():
+            small_dict = full_dict[dt_original]
+            
+            hour_str, day_str = parse_date_time(dt_original)
+            small_dict['horario'] = hour_str
+            small_dict['pico_id'] = pico_id_str
+
+            doc_ref = spot_doc.collection(day_str).document(hour_str)
+            doc_ref.set(small_dict)
+
+
+    def send_history_to_db(self, spot_name, full_dict):
+        self.update_value_doc(f'history_data/{spot_name}', 'forecast_history_data', full_dict)
