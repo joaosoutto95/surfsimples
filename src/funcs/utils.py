@@ -92,7 +92,7 @@ def data_to_pandas(data_json, tide_dict, json_hardcoded, beach_angle_norm):
     df_for['surf_class'] = df_for.apply(lambda x: classify_combination(combinations, x['wind_direction_class'],
                                                                                      x['wind_force_class'], 
                                                                                      x['wave_direction_class'],
-                                                                                     x['wave_force_class_aux']))
+                                                                                     x['wave_force_class_aux']), axis=1)
     df_for['hex_surf_class'] = df_for['surf_class'].apply(lambda x: json_hardcoded['hex_values'].get(x))
 
     df_for = df_for[['datetime', 'date',
