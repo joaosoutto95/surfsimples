@@ -79,6 +79,21 @@ def data_to_pandas(data_json, tide_dict, json_hardcoded, beach_angle_norm):
     df_for['wind_force_class'] = df_for['windSpeed.noaa'].apply(lambda x: classify_wind_for(x, json_hardcoded['wind_for_kmh']))
     df_for['wave_direction_class'] = df_for['swellDirection.noaa'].apply(lambda x: classify_wave_dir(x, beach_angle_norm, json_hardcoded['wave_dir_degree']))
     df_for['wave_force_class'] = df_for['swellHeight.noaa'].apply(lambda x: classify_wave_for(x, json_hardcoded['wave_for_m']))
+    df_for['wave_force_class_aux'] = df_for['wave_force_class'].apply(lambda x: 
+                                                                        'meio metro/meio metrão' if (x == 'meio metro' or x == 'meio metrao') 
+                                                                        else ('um metrinho/um metrão' if (x == 'um metrinho' or x == 'um metrao') 
+                                                                        else ('um metrão e meio/2m' if (x == 'um metro e meio' or x == 'dois metros') 
+                                                                        else ('gigante' if x == 'tres metros' else x)))
+                                                                        )
+
+    df_comb = pd.read_excel('./comb_results.xlsx')
+    combinations = df_comb.to_dict(orient='records')
+
+    df_for['surf_class'] = df_for.apply(lambda x: classify_combination(combinations, x['wind_direction_class'],
+                                                                                     x['wind_force_class'], 
+                                                                                     x['wave_direction_class'],
+                                                                                     x['wave_force_class_aux']))
+    df_for['hex_surf_class'] = df_for['surf_class'].apply(lambda x: json_hardcoded['hex_values'].get(x))
 
     df_for = df_for[['datetime', 'date',
                     'swellDirection.noaa', 'swellDirection_sigla', 'swellHeight.noaa', 'swellPeriod.noaa',
@@ -86,7 +101,7 @@ def data_to_pandas(data_json, tide_dict, json_hardcoded, beach_angle_norm):
                     'waveDirection.noaa', 'waveDirection_sigla', 'waveHeight.noaa', 'wavePeriod.noaa',
                     'windDirection.noaa', 'windDirection_sigla', 'windSpeed.noaa', 
                     'windWaveDirection.noaa', 'windWaveDirection_sigla', 'windWaveHeight.noaa', 'windWavePeriod.noaa',
-                    'wind_direction_class', 'wind_force_class', 'wave_direction_class', 'wave_force_class']].copy()
+                    'wind_direction_class', 'wind_force_class', 'wave_direction_class', 'wave_force_class', 'surf_class', 'hex_surf_class']].copy()
     
     renamed_columns = {}
     for column in df_for.columns:

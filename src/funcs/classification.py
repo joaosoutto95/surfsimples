@@ -30,7 +30,7 @@ def classify_wind_for(wind_for, wind_for_data):
     elif (wind_for >= wind_for_data['vento_forte']) and (wind_for <= wind_for_data['vento_muito_forte']):
         return 'muito forte'
     else:
-        return "extremamente forte"
+        return 'muito forte'
 
 
 def classify_wave_dir(wave_angle, beach_normal_angle, wave_dir_data):
@@ -47,15 +47,15 @@ def classify_wave_dir(wave_angle, beach_normal_angle, wave_dir_data):
     if (angle_diff > -wave_dir_data['reto']) and (angle_diff < wave_dir_data['reto']):
         return 'reto'
     elif (angle_diff >= wave_dir_data['reto']) and (angle_diff < wave_dir_data['reto']+wave_dir_data['inclinado']):
-        return 'inclinado direita'
+        return 'inclinado'
     elif (angle_diff >= wave_dir_data['reto']+wave_dir_data['inclinado']) and (angle_diff < wave_dir_data['reto']+wave_dir_data['inclinado']+wave_dir_data['muito_inclinado']):
-        return 'muito inclinado direita'
+        return 'muito inclinado'
     elif (angle_diff > -(wave_dir_data['reto']+wave_dir_data['inclinado'])) and (angle_diff <= -wave_dir_data['reto']):
-        return 'inclinado esquerda'
+        return 'inclinado'
     elif (angle_diff > -(wave_dir_data['reto']+wave_dir_data['inclinado']+wave_dir_data['muito_inclinado'])) and (angle_diff <= -(wave_dir_data['reto']+wave_dir_data['inclinado'])):
-        return 'muito inclinado esquerda'
+        return 'muito inclinado'
     else:
-        return "sem ondulação"
+        return "sem onda"
 
 
 def classify_wave_for(wave_for, wave_for_data):    
@@ -79,3 +79,12 @@ def classify_wave_for(wave_for, wave_for_data):
         return 'tres metros'
     else:
         return "gigante"
+    
+
+def classify_combination(combinations, VD, VF, OD, OF):
+    for combination in combinations:
+        if (combination['VD'] == VD and
+            combination['VF'] == VF and
+            combination['OD'] == OD and
+            combination['OF'] == OF):
+            return combination['resultado']
