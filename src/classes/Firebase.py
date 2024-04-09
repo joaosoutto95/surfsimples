@@ -24,6 +24,13 @@ class FirebaseDB:
             return None
     
 
+    def get_spots_names(self):
+        collection_docs = self.db.collection('forecast_data').get()
+        spot_names = [doc.id for doc in collection_docs]
+        
+        return spot_names, collection_docs
+
+
     def get_all_docs_in_collection(self, collection_name):
         collection_ref = self.db.collection(collection_name)
 

@@ -122,23 +122,24 @@ def save_excel(df_full_forecast):
     # df_forecast['time'] = df_forecast['time'].apply(lambda x: x.tz_localize(None))
     # df_tides['datetime'] = df_tides['datetime'].apply(lambda x: x.tz_localize(None))
 
-    output_file_name = f'previsao_{dt.datetime.now().strftime("%d_%m_%Y")}.xlsx'
-    with pd.ExcelWriter(output_file_name, engine='xlsxwriter') as writer:
-        sheets_dataframes = {'previsao': df_full_forecast}
+    # output_file_name = f'previsao_{dt.datetime.now().strftime("%d_%m_%Y")}.xlsx'
+    # with pd.ExcelWriter(output_file_name, engine='xlsxwriter') as writer:
+    #     sheets_dataframes = {'previsao': df_full_forecast}
 
-        for sheet_name, df in sheets_dataframes.items():
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
+    #     for sheet_name, df in sheets_dataframes.items():
+    #         df.to_excel(writer, sheet_name=sheet_name, index=False)
 
-            worksheet = writer.sheets[sheet_name]
+    #         worksheet = writer.sheets[sheet_name]
 
-            for i, col in enumerate(df.columns):
-                max_len = max(df[col].astype(str).apply(len).max(), len(col))
-                worksheet.set_column(i, i, max_len + 2)
+    #         for i, col in enumerate(df.columns):
+    #             max_len = max(df[col].astype(str).apply(len).max(), len(col))
+    #             worksheet.set_column(i, i, max_len + 2)
 
     df_full_forecast['datetime'] = df_full_forecast['datetime'].apply(lambda x: x.strftime('%Y-%m-%d_%H:%M:%S'))
     dict_full_forecast = df_full_forecast.set_index('datetime').to_dict('index') 
 
-    return dict_full_forecast, output_file_name  
+    # return dict_full_forecast, output_file_name  
+    return dict_full_forecast  
 
 
 def to_snake_case(name):
@@ -177,7 +178,7 @@ def parse_date_time(input_str):
     diff_days = (date_time_obj - today).days
     
     if diff_days < 0:
-        day_str = f'd{diff_days}'
+        day_str = f'dm1'
     elif diff_days == 0:
         day_str = 'd0'
     else:

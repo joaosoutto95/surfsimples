@@ -6,8 +6,6 @@ NUMB_DAYS = 8
 
 # Location hardcoded info:
 # BRAZIL_TZ = 'America/Sao_Paulo'
-LOCAL = 'tibau_do_sul_praia_do_amor'
-
 
 # Email info:
 # EMAIL_SENDER = 'surfsimplecheck@outlook.com'
