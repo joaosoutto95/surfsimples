@@ -1,7 +1,0 @@
-FROM surfsimples:latest
-
-COPY src/ /app
-
-WORKDIR /app
-
-CMD ["python","-u","main.py"]
