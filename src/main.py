@@ -33,15 +33,10 @@ for local in local_list:
     if wave_json:
         df_full_forecast = data_to_pandas(wave_json, tide_json, doc_hardcoded, doc_spot['beach_normal_degree'])
 
-        # dict_full_forecast, excel_name = save_excel(df_full_forecast)
-        dict_full_forecast = save_excel(df_full_forecast)
+        dict_full_forecast = df_full_to_dict(df_full_forecast)
 
         db.send_forecast_to_db(local, dict_full_forecast)
         db.send_history_to_db(local, dict_full_forecast)
 
-        # if not args.disable_email:
-        #     send_email(file_path=f'./{excel_name}', file_name=excel_name)
-        # else:
-        #     Path(f'./{excel_name}').unlink()
     else:
         print('API Request failed.')

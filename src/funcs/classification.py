@@ -60,25 +60,25 @@ def classify_wave_dir(wave_angle, beach_normal_angle, wave_dir_data):
 
 def classify_wave_for(wave_for, wave_for_data):    
     if wave_for < wave_for_data['flat']:
-        return 'flat'
+        return 'Flat'
     elif (wave_for >= wave_for_data['flat']) and (wave_for <= wave_for_data['meio_metrinho']):
-        return 'meio metrinho'
+        return 'Meio metrinho'
     elif (wave_for >= wave_for_data['meio_metrinho']) and (wave_for <= wave_for_data['meio_metro']):
-        return 'meio metro'
+        return 'Meio metro'
     elif (wave_for >= wave_for_data['meio_metro']) and (wave_for <= wave_for_data['meio_metrao']):
-        return 'meio metrao'
+        return 'Meio metrão'
     elif (wave_for >= wave_for_data['meio_metrao']) and (wave_for <= wave_for_data['um_metrinho']):
-        return 'um metrinho'
+        return 'Um metrinho'
     elif (wave_for >= wave_for_data['um_metrinho']) and (wave_for <= wave_for_data['um_metrao']):
-        return 'um metrao'
+        return 'Um metrão'
     elif (wave_for >= wave_for_data['um_metrao']) and (wave_for <= wave_for_data['um_metro_e_meio']):
-        return 'um metro e meio'
+        return 'Um metro e meio'
     elif (wave_for >= wave_for_data['um_metro_e_meio']) and (wave_for <= wave_for_data['dois_metros']):
-        return 'dois metros'
+        return 'Dois metros'
     elif (wave_for >= wave_for_data['dois_metros']) and (wave_for <= wave_for_data['tres_metros']):
-        return 'tres metros'
+        return 'Três metros'
     else:
-        return "gigante"
+        return "Gigante"
     
 
 def classify_combination(combinations, VD, VF, OD, OF):

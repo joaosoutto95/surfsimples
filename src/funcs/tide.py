@@ -44,43 +44,43 @@ def interpolate_tides(tide_data, dates, tide_hardcoded):
         if right_after[1] - last_before[1] > tide_hardcoded['mare_morta']:
             percent = (interpolated_value - last_before[1])/(right_after[1] - last_before[1])
             if interpolated_value==last_before[1]:
-                class_tide = 'mare baixa'
+                class_tide = 'Maré baixa'
                 interpolated_values[target_hour] = (interpolated_value, class_tide)
                 continue
 
             if interpolated_value==right_after[1]:
-                class_tide = 'mare alta'
+                class_tide = 'Maré alta'
                 interpolated_values[target_hour] = (interpolated_value, class_tide)
                 continue
 
             if percent <= tide_hardcoded['mare_baixa']:
-                class_tide = 'mare baixa subindo'
+                class_tide = 'Maré baixa subindo'
             elif percent >= tide_hardcoded['mare_baixa']+tide_hardcoded['meia_mare']:
-                class_tide = 'mare alta subindo'
+                class_tide = 'Maré alta subindo'
             else:
-                class_tide = 'meia mare subindo'
+                class_tide = 'Meia maré subindo'
 
         elif ((right_after[1] - last_before[1]) <= tide_hardcoded['mare_morta']) and (right_after[1] - last_before[1]) >= -tide_hardcoded['mare_morta']:
-            class_tide = 'mare morta'
+            class_tide = 'Maré morta'
 
         else:
             percent = (interpolated_value - last_before[1])/(right_after[1] - last_before[1])
             if interpolated_value==last_before[1]:
-                class_tide = 'mare alta'
+                class_tide = 'Maré alta'
                 interpolated_values[target_hour] = (interpolated_value, class_tide)
                 continue
 
             if interpolated_value==right_after[1]:
-                class_tide = 'mare baixa'
+                class_tide = 'Maré baixa'
                 interpolated_values[target_hour] = (interpolated_value, class_tide)
                 continue
 
             if percent <= tide_hardcoded['mare_alta']:
-                class_tide = 'mare alta descendo'
+                class_tide = 'Maré alta descendo'
             elif percent >= tide_hardcoded['mare_alta']+tide_hardcoded['meia_mare']:
-                class_tide = 'mare baixa descendo'
+                class_tide = 'Maré baixa descendo'
             else:
-                class_tide = 'meia mare descendo'
+                class_tide = 'Meia maré descendo'
 
         interpolated_values[target_hour] = (interpolated_value, class_tide)
         

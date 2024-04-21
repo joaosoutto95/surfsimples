@@ -63,6 +63,7 @@ def data_to_pandas(data_json, tide_dict, json_hardcoded, beach_angle_norm):
     df_for = selected_df_for.copy().sort_values('datetime', ascending=True).reset_index(drop=True)
     df_for['datetime'] = df_for['datetime'].dt.tz_localize(None)
     df_for['date'] = df_for['datetime'].apply(lambda x: dt.datetime.strftime(x, '%d/%m/%Y'))
+    df_for['weekday'] = df_for['datetime'].apply(lambda x: get_weekday_brazil(x))
 
     # df_for['datetime'] = df_for['datetime'].dt.tz_convert(BRAZIL_TZ)
     # df_tid['datetime'] = df_tid['datetime'].dt.tz_convert(BRAZIL_TZ)
@@ -77,13 +78,13 @@ def data_to_pandas(data_json, tide_dict, json_hardcoded, beach_angle_norm):
 
     df_for['wind_direction_class'] = df_for['windDirection.noaa'].apply(lambda x: classify_wind_dir(x, beach_angle_norm, json_hardcoded['wind_dir_degree']))
     df_for['wind_force_class'] = df_for['windSpeed.noaa'].apply(lambda x: classify_wind_for(x, json_hardcoded['wind_for_kmh']))
-    df_for['wave_direction_class'] = df_for['swellDirection.noaa'].apply(lambda x: classify_wave_dir(x, beach_angle_norm, json_hardcoded['wave_dir_degree']))
-    df_for['wave_force_class'] = df_for['swellHeight.noaa'].apply(lambda x: classify_wave_for(x, json_hardcoded['wave_for_m']))
+    df_for['wave_direction_class'] = df_for['waveDirection.noaa'].apply(lambda x: classify_wave_dir(x, beach_angle_norm, json_hardcoded['wave_dir_degree']))
+    df_for['wave_force_class'] = df_for['waveHeight.noaa'].apply(lambda x: classify_wave_for(x, json_hardcoded['wave_for_m']))
     df_for['wave_force_class_aux'] = df_for['wave_force_class'].apply(lambda x: 
-                                                                        'meio metro/meio metrão' if (x == 'meio metro' or x == 'meio metrao') 
-                                                                        else ('um metrinho/um metrão' if (x == 'um metrinho' or x == 'um metrao') 
-                                                                        else ('um metrão e meio/2m' if (x == 'um metro e meio' or x == 'dois metros') 
-                                                                        else ('gigante' if x == 'tres metros' else x)))
+                                                                        'meio metro/meio metrão' if (x == 'Meio metro' or x == 'Meio metrão') 
+                                                                        else ('um metrinho/um metrão' if (x == 'Um metrinho' or x == 'Um metrão') 
+                                                                        else ('um metrão e meio/2m' if (x == 'Um metro e meio' or x == 'Dois metros') 
+                                                                        else ('gigante' if x == 'Três metros' else x.lower())))
                                                                         )
 
     df_comb = pd.read_excel('./comb_results.xlsx')
@@ -95,7 +96,7 @@ def data_to_pandas(data_json, tide_dict, json_hardcoded, beach_angle_norm):
                                                                                      x['wave_force_class_aux']), axis=1)
     df_for['hex_surf_class'] = df_for['surf_class'].apply(lambda x: json_hardcoded['hex_values'].get(x))
 
-    df_for = df_for[['datetime', 'date',
+    df_for = df_for[['datetime', 'date', 'weekday',
                     'swellDirection.noaa', 'swellDirection_sigla', 'swellHeight.noaa', 'swellPeriod.noaa',
                     'secondarySwellDirection.noaa', 'secondarySwellDirection_sigla', 'secondarySwellHeight.noaa', 'secondarySwellPeriod.noaa',
                     'waveDirection.noaa', 'waveDirection_sigla', 'waveHeight.noaa', 'wavePeriod.noaa',
@@ -118,27 +119,10 @@ def data_to_pandas(data_json, tide_dict, json_hardcoded, beach_angle_norm):
     return df_full
 
 
-def save_excel(df_full_forecast):
-    # df_forecast['time'] = df_forecast['time'].apply(lambda x: x.tz_localize(None))
-    # df_tides['datetime'] = df_tides['datetime'].apply(lambda x: x.tz_localize(None))
-
-    # output_file_name = f'previsao_{dt.datetime.now().strftime("%d_%m_%Y")}.xlsx'
-    # with pd.ExcelWriter(output_file_name, engine='xlsxwriter') as writer:
-    #     sheets_dataframes = {'previsao': df_full_forecast}
-
-    #     for sheet_name, df in sheets_dataframes.items():
-    #         df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-    #         worksheet = writer.sheets[sheet_name]
-
-    #         for i, col in enumerate(df.columns):
-    #             max_len = max(df[col].astype(str).apply(len).max(), len(col))
-    #             worksheet.set_column(i, i, max_len + 2)
-
+def df_full_to_dict(df_full_forecast):
     df_full_forecast['datetime'] = df_full_forecast['datetime'].apply(lambda x: x.strftime('%Y-%m-%d_%H:%M:%S'))
     dict_full_forecast = df_full_forecast.set_index('datetime').to_dict('index') 
 
-    # return dict_full_forecast, output_file_name  
     return dict_full_forecast  
 
 
@@ -150,8 +134,35 @@ def to_snake_case(name):
     return name
 
 
+def get_weekday_brazil(dt):
+    weekday_names = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
+    weekday_index = dt.weekday()
+    
+    return weekday_names[weekday_index]
+
+
 def camel_to_snake(name):
     return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
+
+
+def parse_date_time(input_str):
+    date_time_obj = dt.datetime.strptime(input_str, '%Y-%m-%d_%H:%M:%S')
+    hour_str = date_time_obj.strftime('%Hh')
+    
+    today = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    diff_days = (date_time_obj - today).days
+    
+    if diff_days < 0:
+        day_str = f'dm1'
+    elif diff_days == 0:
+        day_str = 'd0'
+    else:
+        day_str = f'd{diff_days}'
+    
+    return hour_str, day_str
+
+
+########    Deprecated    ########
 
 
 # def send_email(file_path=None, file_name=None):
@@ -170,18 +181,24 @@ def camel_to_snake(name):
 #     Path(file_path).unlink()
 
 
-def parse_date_time(input_str):
-    date_time_obj = dt.datetime.strptime(input_str, '%Y-%m-%d_%H:%M:%S')
-    hour_str = date_time_obj.strftime('%Hh')
-    
-    today = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    diff_days = (date_time_obj - today).days
-    
-    if diff_days < 0:
-        day_str = f'dm1'
-    elif diff_days == 0:
-        day_str = 'd0'
-    else:
-        day_str = f'd{diff_days}'
-    
-    return hour_str, day_str
+# def save_excel_old(df_full_forecast):
+#     df_forecast['time'] = df_forecast['time'].apply(lambda x: x.tz_localize(None))
+#     df_tides['datetime'] = df_tides['datetime'].apply(lambda x: x.tz_localize(None))
+
+#     output_file_name = f'previsao_{dt.datetime.now().strftime("%d_%m_%Y")}.xlsx'
+#     with pd.ExcelWriter(output_file_name, engine='xlsxwriter') as writer:
+#         sheets_dataframes = {'previsao': df_full_forecast}
+
+#         for sheet_name, df in sheets_dataframes.items():
+#             df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+#             worksheet = writer.sheets[sheet_name]
+
+#             for i, col in enumerate(df.columns):
+#                 max_len = max(df[col].astype(str).apply(len).max(), len(col))
+#                 worksheet.set_column(i, i, max_len + 2)
+
+#     df_full_forecast['datetime'] = df_full_forecast['datetime'].apply(lambda x: x.strftime('%Y-%m-%d_%H:%M:%S'))
+#     dict_full_forecast = df_full_forecast.set_index('datetime').to_dict('index') 
+
+#     return dict_full_forecast, output_file_name    
