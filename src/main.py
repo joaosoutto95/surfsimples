@@ -1,6 +1,7 @@
 import argparse
 
-from configs import FIREB_NAME_JSON, NUMB_DAYS
+from pytz import timezone
+from configs import FIREB_NAME_JSON, NUMB_DAYS, BRAZIL_TZ
 from funcs.utils import *
 from funcs.tide import *
 from classes.Firebase import FirebaseDB
@@ -12,7 +13,7 @@ parser = argparse.ArgumentParser(description='Process and send surfing forecast 
 parser.add_argument('-d', '--disable_email', action='store_true', help='Disable sending email')
 args = parser.parse_args()
 
-year_now = dt.datetime.now().year
+year_now = dt.datetime.now(timezone(BRAZIL_TZ)).replace(tzinfo=None, microsecond=0).year
 
 local_list, local_coll_docs = db.get_spots_names()
 

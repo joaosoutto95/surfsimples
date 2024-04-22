@@ -13,3 +13,8 @@ ref_marinha_rides/
 *.sql
 *.spec
 *.json
+*.ps1
+
+# Files
+Dockerfile
+DockerfileUpdate

@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+from pytz import timezone
+from configs import BRAZIL_TZ
+
 
 def filter_dictionary_for_day(dict_tide, list_dates_str):
     dates = [datetime.strptime(date_str, '%Y-%m-%d').date() for date_str in list_dates_str]
@@ -88,9 +91,9 @@ def interpolate_tides(tide_data, dates, tide_hardcoded):
 
 
 def get_tide_forecasts(tide_data, tide_definition, numb_days=3):
-    date_list = [(datetime.now().date() - timedelta(days=1)).strftime('%Y-%m-%d')]
+    date_list = [(datetime.now(timezone(BRAZIL_TZ)).replace(tzinfo=None, microsecond=0).date() - timedelta(days=1)).strftime('%Y-%m-%d')]
     for i in range(numb_days+1):
-        date_list.append((datetime.now().date() + timedelta(days=i)).strftime('%Y-%m-%d'))
+        date_list.append((datetime.now(timezone(BRAZIL_TZ)).replace(tzinfo=None, microsecond=0).date() + timedelta(days=i)).strftime('%Y-%m-%d'))
     
     filtered_tide_times_dict = filter_dictionary_for_day(tide_data, date_list)
     interpolated_values = interpolate_tides(filtered_tide_times_dict, date_list, tide_definition)

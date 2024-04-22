@@ -6,10 +6,9 @@ import arrow
 import requests
 import re
 
-from pathlib import Path
-from funcs.email_sender import EmailSender
+from pytz import timezone
 from funcs.classification import *
-from configs import API_KEY
+from configs import API_KEY, BRAZIL_TZ
 
 
 def stormglass_request(lat, lon, numb_days=3):
@@ -149,7 +148,7 @@ def parse_date_time(input_str):
     date_time_obj = dt.datetime.strptime(input_str, '%Y-%m-%d_%H:%M:%S')
     hour_str = date_time_obj.strftime('%Hh')
     
-    today = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today = dt.datetime.now(timezone(BRAZIL_TZ)).replace(tzinfo=None, microsecond=0).now().replace(hour=0, minute=0, second=0, microsecond=0)
     diff_days = (date_time_obj - today).days
     
     if diff_days < 0:
